@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treino Violão Pro - 57 Notas</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #1a252f; color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        .box { background: #34495e; padding: 20px; border-radius: 20px; width: 80%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .topo-info { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        #contador-texto { color: #bdc3c7; font-size: 16px; font-weight: bold; }
+        #velocidade-visor { color: #2ecc71; font-size: 18px; font-weight: bold; }
+        #info-corda { font-size: 28px; font-weight: bold; color: #f1c40f; margin: 5px 0; min-height: 35px; }
+        #pauta-container { margin: 30px auto; width: 100%; height: 180px; position: relative; }
+        .linha-pessoal { width: 100%; height: 3px; background-color: #ecf0f1; position: absolute; }
+        .l1 { top: 20px; } .l2 { top: 50px; } .l3 { top: 80px; } .l4 { top: 110px; } .l5 { top: 140px; }
+        #clave { position: absolute; left: 0px; top: -10px; font-size: 120px; color: #f1c40f; opacity: 0.4; line-height: 1; }
+        #bolinha-nota { position: absolute; font-size: 100px; color: #000; display: none; left: 60%; transform: translate(-50%, -55%); z-index: 10; line-height: 0; }
+        #acidente-pauta { position: absolute; font-size: 80px; color: #000; display: none; left: 35%; transform: translate(-50%, -50%); z-index: 10; font-weight: bold; line-height: 0; }
+        .tracinho { width: 70px; height: 3px; background-color: #ecf0f1; position: absolute; left: 60%; transform: translateX(-50%); display: none; z-index: 5; }
+        #info-dedo { font-size: 28px; font-weight: bold; color: #f1c40f; margin-top: 50px; min-height: 35px; }
+        h1 { font-size: 45px; margin: 15px 0; color: #f1c40f; min-height: 60px; }
+        .controles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 100%; }
+        button { padding: 12px; font-size: 11px; cursor: pointer; border-radius: 10px; border: none; color: white; font-weight: bold; text-transform: uppercase; }
+        .btn-main { grid-column: span 3; font-size: 24px; background: #27ae60; margin-bottom: 5px; padding: 18px; }
+        .btn-pause { background: #e74c3c !important; }
+        .btn-toggle { background: #3498db; }
+        .btn-vel { background: #e67e22; grid-column: span 1.5; margin-top: 5px; font-size: 15px; }
+        .hidden { opacity: 0 !important; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="topo-info">
+            <div id="contador-texto">Nota 0 de 57</div>
+            <div id="velocidade-visor">Tempo: 3.0s</div>
+        </div>
+        <div id="info-corda">Corda: -</div>
+        <div id="pauta-container">
+            <div id="clave">&#119070;</div>
+            <div class="linha-pessoal l1"></div><div class="linha-pessoal l2"></div><div class="linha-pessoal l3"></div><div class="linha-pessoal l4"></div><div class="linha-pessoal l5"></div>
+            <div id="traco-1" class="tracinho" style="top: 170px;"></div><div id="traco-2" class="tracinho" style="top: 200px;"></div><div id="traco-3" class="tracinho" style="top: 230px;"></div>
+            <div id="acidente-pauta">#</div><div id="bolinha-nota">&#119136;</div> 
+        </div>
+        <div id="info-dedo">Dedo: -</div>
+        <h1 id="nota-texto">---</h1>
+        <div class="controles">
+            <button id="btnPlayPause" class="btn-main" onclick="togglePlay()">PLAY</button>
+            <button class="btn-toggle" onclick="toggleVis('nota-texto', this, 'NOME')">OCULTAR NOME</button>
+            <button class="btn-toggle" onclick="toggleVis('info-corda', this, 'CORDA')">OCULTAR CORDA</button>
+            <button class="btn-toggle" onclick="toggleVis('info-dedo', this, 'DEDO')">OCULTAR DEDO</button>
+            <button class="btn-vel" style="grid-column: 1/2" onclick="mudarVelocidade(500)">+ Lento</button>
+            <button class="btn-vel" style="grid-column: 3/4" onclick="mudarVelocidade(-500)">+ Rápido</button>
+        </div>
+    </div>
+
+    <script>
+        const listaOriginal = [
+            // IDA (29 notas)
+            { n: "Mi (E)", c: "6ª", d: "0", p: 230, a: "", t: [1,2,3] },
+            { n: "Fá (F)", c: "6ª", d: "1", p: 215, a: "", t: [1,2,3] },
+            { n: "Fá# (F#)", c: "6ª", d: "2", p: 215, a: "#", t: [1,2,3] },
+            { n: "Sol (G)", c: "6ª", d: "3", p: 200, a: "", t: [1,2] },
+            { n: "Sol# (G#)", c: "6ª", d: "4", p: 200, a: "#", t: [1,2] },
+            { n: "Lá (A)", c: "5ª", d: "0", p: 185, a: "", t: [1,2] },
+            { n: "Lá# (A#)", c: "5ª", d: "1", p: 185, a: "#", t: [1,2] },
+            { n: "Si (B)", c: "5ª", d: "2", p: 170, a: "", t: [1] },
+            { n: "Dó (C)", c: "5ª", d: "3", p: 155, a: "", t: [1] },
+            { n: "Dó# (C#)", c: "5ª", d: "4", p: 155, a: "#", t: [1] },
+            { n: "Ré (D)", c: "4ª", d: "0", p: 140, a: "", t: [] },
+            { n: "Ré# (D#)", c: "4ª", d: "1", p: 140, a: "#", t: [] },
+            { n: "Mi (E)", c: "4ª", d: "2", p: 125, a: "", t: [] },
+            { n: "Fá (F)", c: "4ª", d: "3", p: 110, a: "", t: [] },
+            { n: "Fá# (F#)", c: "4ª", d: "4", p: 110, a: "#", t: [] },
+            { n: "Sol (G)", c: "3ª", d: "0", p: 95, a: "", t: [] },
+            { n: "Sol# (G#)", c: "3ª", d: "1", p: 95, a: "#", t: [] },
+            { n: "Lá (A)", c: "3ª", d: "2", p: 80, a: "", t: [] },
+            { n: "Lá# (A#)", c: "3ª", d: "3", p: 80, a: "#", t: [] },
+            { n: "Si (B)", c: "2ª", d: "0", p: 65, a: "", t: [] },
+            { n: "Dó (C)", c: "2ª", d: "1", p: 50, a: "", t: [] },
+            { n: "Dó# (C#)", c: "2ª", d: "2", p: 50, a: "#", t: [] },
+            { n: "Ré (D)", c: "2ª", d: "3", p: 35, a: "", t: [] },
+            { n: "Ré# (D#)", c: "2ª", d: "4", p: 35, a: "#", t: [] },
+            { n: "Mi (E)", c: "1ª", d: "0", p: 20, a: "", t: [] },
+            { n: "Fá (F)", c: "1ª", d: "1", p: 5, a: "", t: [] },
+            { n: "Fá# (F#)", c: "1ª", d: "2", p: 5, a: "#", t: [] },
+            { n: "Sol (G)", c: "1ª", d: "3", p: -10, a: "", t: [] },
+            { n: "Sol# (G#)", c: "1ª", d: "4", p: -10, a: "#", t: [] },
+            // VOLTA (28 notas)
+            { n: "Sol (G)", c: "1ª", d: "3", p: -10, a: "", t: [] }, 
+            { n: "Sol♭ (Gb)", c: "1ª", d: "2", p: 5, a: "b", t: [] },
+            { n: "Fá (F)", c: "1ª", d: "1", p: 5, a: "", t: [] },
+            { n: "Mi (E)", c: "1ª", d: "0", p: 20, a: "", t: [] },
+            { n: "Mi♭ (Eb)", c: "2ª", d: "4", p: 35, a: "b", t: [] },
+            { n: "Ré (D)", c: "2ª", d: "3", p: 35, a: "", t: [] },
+            { n: "Ré♭ (Db)", c: "2ª", d: "2", p: 50, a: "b", t: [] },
+            { n: "Dó (C)", c: "2ª", d: "1", p: 50, a: "", t: [] },
+            { n: "Si (B)", c: "2ª", d: "0", p: 65, a: "", t: [] },
+            { n: "Si♭ (Bb)", c: "3ª", d: "3", p: 80, a: "b", t: [] },
+            { n: "Lá (A)", c: "3ª", d: "2", p: 80, a: "", t: [] },
+            { n: "Lá♭ (Ab)", c: "3ª", d: "1", p: 95, a: "b", t: [] },
+            { n: "Sol (G)", c: "3ª", d: "0", p: 95, a: "", t: [] },
+            { n: "Sol♭ (Gb)", c: "4ª", d: "4", p: 110, a: "b", t: [] },
+            { n: "Fá (F)", c: "4ª", d: "3", p: 110, a: "", t: [] },
+            { n: "Mi (E)", c: "4ª", d: "2", p: 125, a: "", t: [] },
+            { n: "Mi♭ (Eb)", c: "4ª", d: "1", p: 140, a: "b", t: [] },
+            { n: "Ré (D)", c: "4ª", d: "0", p: 140, a: "", t: [] },
+            { n: "Ré♭ (Db)", c: "5ª", d: "4", p: 155, a: "b", t: [1] },
+            { n: "Dó (C)", c: "5ª", d: "3", p: 155, a: "", t: [1] },
+            { n: "Si (B)", c: "5ª", d: "2", p: 170, a: "", t: [1] },
+            { n: "Si♭ (Bb)", c: "5ª", d: "1", p: 185, a: "b", t: [1,2] },
+            { n: "Lá (A)", c: "5ª", d: "0", p: 185, a: "", t: [1,2] },
+            { n: "Lá♭ (Ab)", c: "6ª", d: "4", p: 200, a: "b", t: [1,2] },
+            { n: "Sol (G)", c: "6ª", d: "3", p: 200, a: "", t: [1,2] },
+            { n: "Sol♭ (Gb)", c: "6ª", d: "2", p: 215, a: "b", t: [1,2,3] },
+            { n: "Fá (F)", c: "6ª", d: "1", p: 215, a: "", t: [1,2,3] },
+            { n: "Mi (E)", c: "6ª", d: "0", p: 230, a: "", t: [1,2,3] }
+        ];
+
+        let baralhoAtivo = [];
+        let tempo = 3000;
+        let intervalo = null;
+        let contadorGlobal = 0;
+        let countdown = 0;
+
+        function embaralhar(arr) {
+            let n = [...arr];
+            for (let i = n.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [n[i], n[j]] = [n[j], n[i]];
+            }
+            return n;
+        }
+
+        function trocarNota() {
+            if (baralhoAtivo.length === 0) {
+                baralhoAtivo = embaralhar(listaOriginal);
+                contadorGlobal = 0;
+            }
+            const nota = baralhoAtivo.pop();
+            contadorGlobal++;
+            document.getElementById("nota-texto").innerText = nota.n;
+            document.getElementById("info-corda").innerText = "Corda: " + nota.c;
+            document.getElementById("info-dedo").innerText = "Dedo: " + nota.d;
+            document.getElementById("contador-texto").innerText = "Nota " + contadorGlobal + " de 57";
+            const b = document.getElementById("bolinha-nota");
+            const a = document.getElementById("acidente-pauta");
+            document.querySelectorAll('.tracinho').forEach(t => t.style.display = 'none');
+            b.style.display = "block"; b.style.top = nota.p + "px"; a.style.top = nota.p + "px";
+            if (nota.a === "#") { a.innerText = "#"; a.style.display = "block"; }
+            else if (nota.a === "b") { a.innerText = "♭"; a.style.display = "block"; }
+            else { a.style.display = "none"; }
+            if (nota.t) nota.t.forEach(num => document.getElementById("traco-" + num).style.display = "block");
+        }
+
+        function togglePlay() {
+            const btn = document.getElementById("btnPlayPause");
+            if (intervalo) { clearInterval(intervalo); intervalo = null; btn.innerText = "PLAY"; btn.classList.remove("btn-pause"); }
+            else { iniciarContagem(); }
+        }
+
+        function iniciarContagem() {
+            const btn = document.getElementById("btnPlayPause");
+            btn.classList.add("btn-pause");
+            countdown = 5;
+            const cInt = setInterval(() => {
+                if (countdown > 0) { btn.innerText = countdown + "..."; countdown--; }
+                else { clearInterval(cInt); btn.innerText = "PAUSE"; trocarNota(); intervalo = setInterval(trocarNota, tempo); }
+            }, 1000);
+        }
+
+        function toggleVis(id, btn, label) {
+            const el = document.getElementById(id);
+            if (el.classList.contains('hidden')) { el.classList.remove('hidden'); btn.innerText = "OCULTAR " + label; }
+            else { el.classList.add('hidden'); btn.innerText = "MOSTRAR " + label; }
+        }
+
+        function mudarVelocidade(aj) {
+            tempo += aj; if (tempo < 300) tempo = 300;
+            document.getElementById("velocidade-visor").innerText = "Tempo: " + (tempo/1000).toFixed(1) + "s";
+            if (intervalo) { clearInterval(intervalo); intervalo = setInterval(trocarNota, tempo); }
+        }
+    </script>
+</body>
+</html>
