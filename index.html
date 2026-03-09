@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Treino Violão Pro - Layout Final</title>
-    <link rel="icon" type="image/png" href="https://icons8.com.br/icon/OQdkVuSCiLFb/guitar">
+    <title>Treino Violão Pro - Filtro Total</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3815/3815638.png">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3815/3815638.png">
     <meta name="theme-color" content="#1a252f">
 
@@ -30,16 +30,15 @@
         #info-dedo { font-size: 26px; font-weight: bold; color: #f1c40f; margin-top: 45px; min-height: 30px; }
         h1 { font-size: 40px; margin: 10px 0; color: #f1c40f; min-height: 50px; }
 
-        /* ORGANIZAÇÃO DOS BOTÕES SEM "BURACOS" */
         .controles { display: flex; flex-direction: column; gap: 8px; width: 100%; }
         
         .btn-main { font-size: 22px; background: #27ae60; padding: 15px; border-radius: 12px; border: none; color: white; font-weight: bold; text-transform: uppercase; }
         .btn-pause { background: #e74c3c !important; }
 
-        .linha-botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .linha-botoes-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .linha-botoes-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-        button { padding: 10px; font-size: 11px; cursor: pointer; border-radius: 8px; border: none; color: white; font-weight: bold; text-transform: uppercase; }
+        button { padding: 10px; font-size: 10px; cursor: pointer; border-radius: 8px; border: none; color: white; font-weight: bold; text-transform: uppercase; }
         
         .btn-filter { background: #9b59b6; }
         .btn-off { background: #7f8c8d; opacity: 0.6; }
@@ -71,8 +70,9 @@
         <div class="controles">
             <button id="btnPlayPause" class="btn-main" onclick="togglePlay()">PLAY</button>
             
-            <div class="linha-botoes">
-                <button id="f-sust" class="btn-filter" onclick="toggleFiltro('sust')">Sustenidos: ON</button>
+            <div class="linha-botoes-3">
+                <button id="f-nat" class="btn-filter" onclick="toggleFiltro('nat')">Naturais: ON</button>
+                <button id="f-sust" class="btn-filter" onclick="toggleFiltro('sust')">Sust: ON</button>
                 <button id="f-bemol" class="btn-filter" onclick="toggleFiltro('bemol')">Bemóis: ON</button>
             </div>
 
@@ -82,7 +82,7 @@
                 <button class="btn-toggle" onclick="toggleVis('info-dedo', this, 'DEDO')">DEDO</button>
             </div>
             
-            <div class="linha-botoes">
+            <div class="linha-botoes-2">
                 <button class="btn-vel" onclick="mudarVelocidade(500)">+ Lento</button>
                 <button class="btn-vel" onclick="mudarVelocidade(-500)">+ Rápido</button>
             </div>
@@ -91,7 +91,6 @@
 
     <script>
         const listaOriginal = [
-            // IDA (29 notas - Sustenidos)
             { n: "Mi (E)", c: "6ª", d: "0", p: 230, a: "", t: [1,2,3] },
             { n: "Fá (F)", c: "6ª", d: "1", p: 215, a: "", t: [1,2,3] },
             { n: "Fá# (F#)", c: "6ª", d: "2", p: 215, a: "#", t: [1,2,3] },
@@ -121,7 +120,6 @@
             { n: "Fá# (F#)", c: "1ª", d: "2", p: 5, a: "#", t: [] },
             { n: "Sol (G)", c: "1ª", d: "3", p: -10, a: "", t: [] },
             { n: "Sol# (G#)", c: "1ª", d: "4", p: -10, a: "#", t: [] },
-            // VOLTA (28 notas)
             { n: "Sol (G)", c: "1ª", d: "3", p: -10, a: "", t: [] }, 
             { n: "Sol♭ (Gb)", c: "1ª", d: "2", p: 5, a: "b", t: [] },
             { n: "Fá (F)", c: "1ª", d: "1", p: 5, a: "", t: [] },
@@ -156,11 +154,13 @@
         let tempo = 3000;
         let intervalo = null;
         let contadorGlobal = 0;
+        let useNat = true;
         let useSust = true;
         let useBemol = true;
 
         function atualizarBaralho() {
             let filtrado = listaOriginal.filter(nota => {
+                if (nota.a === "" && !useNat) return false;
                 if (nota.a === "#" && !useSust) return false;
                 if (nota.a === "b" && !useBemol) return false;
                 return true;
@@ -171,9 +171,13 @@
         }
 
         function toggleFiltro(tipo) {
-            if (tipo === 'sust') {
+            if (tipo === 'nat') {
+                useNat = !useNat;
+                document.getElementById("f-nat").innerText = "Nat: " + (useNat ? "ON" : "OFF");
+                document.getElementById("f-nat").classList.toggle("btn-off", !useNat);
+            } else if (tipo === 'sust') {
                 useSust = !useSust;
-                document.getElementById("f-sust").innerText = "Sustenidos: " + (useSust ? "ON" : "OFF");
+                document.getElementById("f-sust").innerText = "Sust: " + (useSust ? "ON" : "OFF");
                 document.getElementById("f-sust").classList.toggle("btn-off", !useSust);
             } else {
                 useBemol = !useBemol;
@@ -230,4 +234,3 @@
     </script>
 </body>
 </html>
-
