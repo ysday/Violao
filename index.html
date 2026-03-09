@@ -3,36 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Treino Violão Pro - 57 Notas</title>
+    <title>Treino Violão Pro - Filtros</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3815/3815638.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3815/3815638.png">
+    <meta name="theme-color" content="#1a252f">
+
     <style>
         body { font-family: sans-serif; text-align: center; background: #1a252f; color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        .box { background: #34495e; padding: 20px; border-radius: 20px; width: 80%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .topo-info { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        #contador-texto { color: #bdc3c7; font-size: 16px; font-weight: bold; }
-        #velocidade-visor { color: #2ecc71; font-size: 18px; font-weight: bold; }
-        #info-corda { font-size: 28px; font-weight: bold; color: #f1c40f; margin: 5px 0; min-height: 35px; }
-        #pauta-container { margin: 30px auto; width: 100%; height: 180px; position: relative; }
+        .box { background: #34495e; padding: 15px; border-radius: 20px; width: 85%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .topo-info { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        #contador-texto { color: #bdc3c7; font-size: 14px; font-weight: bold; }
+        #velocidade-visor { color: #2ecc71; font-size: 16px; font-weight: bold; }
+        #info-corda { font-size: 26px; font-weight: bold; color: #f1c40f; margin: 2px 0; min-height: 30px; transition: opacity 0.2s; }
+        #pauta-container { margin: 20px auto; width: 100%; height: 180px; position: relative; }
         .linha-pessoal { width: 100%; height: 3px; background-color: #ecf0f1; position: absolute; }
         .l1 { top: 20px; } .l2 { top: 50px; } .l3 { top: 80px; } .l4 { top: 110px; } .l5 { top: 140px; }
         #clave { position: absolute; left: 0px; top: -10px; font-size: 120px; color: #f1c40f; opacity: 0.4; line-height: 1; }
         #bolinha-nota { position: absolute; font-size: 100px; color: #000; display: none; left: 60%; transform: translate(-50%, -55%); z-index: 10; line-height: 0; }
         #acidente-pauta { position: absolute; font-size: 80px; color: #000; display: none; left: 35%; transform: translate(-50%, -50%); z-index: 10; font-weight: bold; line-height: 0; }
         .tracinho { width: 70px; height: 3px; background-color: #ecf0f1; position: absolute; left: 60%; transform: translateX(-50%); display: none; z-index: 5; }
-        #info-dedo { font-size: 28px; font-weight: bold; color: #f1c40f; margin-top: 50px; min-height: 35px; }
-        h1 { font-size: 45px; margin: 15px 0; color: #f1c40f; min-height: 60px; }
-        .controles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 100%; }
-        button { padding: 12px; font-size: 11px; cursor: pointer; border-radius: 10px; border: none; color: white; font-weight: bold; text-transform: uppercase; }
-        .btn-main { grid-column: span 3; font-size: 24px; background: #27ae60; margin-bottom: 5px; padding: 18px; }
+        #info-dedo { font-size: 26px; font-weight: bold; color: #f1c40f; margin-top: 45px; min-height: 30px; transition: opacity 0.2s; }
+        h1 { font-size: 40px; margin: 10px 0; color: #f1c40f; min-height: 50px; transition: opacity 0.2s; }
+        .controles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; width: 100%; }
+        button { padding: 10px; font-size: 10px; cursor: pointer; border-radius: 8px; border: none; color: white; font-weight: bold; text-transform: uppercase; }
+        .btn-main { grid-column: span 3; font-size: 22px; background: #27ae60; margin-bottom: 5px; padding: 15px; }
         .btn-pause { background: #e74c3c !important; }
         .btn-toggle { background: #3498db; }
-        .btn-vel { background: #e67e22; grid-column: span 1.5; margin-top: 5px; font-size: 15px; }
+        .btn-filter { background: #9b59b6; grid-column: span 1.5; margin-bottom: 5px; font-size: 11px; }
+        .btn-off { background: #7f8c8d; opacity: 0.6; }
+        .btn-vel { background: #e67e22; grid-column: span 1.5; font-size: 14px; }
         .hidden { opacity: 0 !important; }
     </style>
 </head>
 <body>
     <div class="box">
         <div class="topo-info">
-            <div id="contador-texto">Nota 0 de 57</div>
+            <div id="contador-texto">Nota 0 de 0</div>
             <div id="velocidade-visor">Tempo: 3.0s</div>
         </div>
         <div id="info-corda">Corda: -</div>
@@ -46,9 +52,14 @@
         <h1 id="nota-texto">---</h1>
         <div class="controles">
             <button id="btnPlayPause" class="btn-main" onclick="togglePlay()">PLAY</button>
-            <button class="btn-toggle" onclick="toggleVis('nota-texto', this, 'NOME')">OCULTAR NOME</button>
-            <button class="btn-toggle" onclick="toggleVis('info-corda', this, 'CORDA')">OCULTAR CORDA</button>
-            <button class="btn-toggle" onclick="toggleVis('info-dedo', this, 'DEDO')">OCULTAR DEDO</button>
+            
+            <button id="f-sust" class="btn-filter" onclick="toggleFiltro('sust')">Sustenidos: ON</button>
+            <button id="f-bemol" class="btn-filter" onclick="toggleFiltro('bemol')">Bemóis: ON</button>
+
+            <button class="btn-toggle" onclick="toggleVis('nota-texto', this, 'NOME')">NOME</button>
+            <button class="btn-toggle" onclick="toggleVis('info-corda', this, 'CORDA')">CORDA</button>
+            <button class="btn-toggle" onclick="toggleVis('info-dedo', this, 'DEDO')">DEDO</button>
+            
             <button class="btn-vel" style="grid-column: 1/2" onclick="mudarVelocidade(500)">+ Lento</button>
             <button class="btn-vel" style="grid-column: 3/4" onclick="mudarVelocidade(-500)">+ Rápido</button>
         </div>
@@ -56,7 +67,6 @@
 
     <script>
         const listaOriginal = [
-            // IDA (29 notas)
             { n: "Mi (E)", c: "6ª", d: "0", p: 230, a: "", t: [1,2,3] },
             { n: "Fá (F)", c: "6ª", d: "1", p: 215, a: "", t: [1,2,3] },
             { n: "Fá# (F#)", c: "6ª", d: "2", p: 215, a: "#", t: [1,2,3] },
@@ -86,7 +96,6 @@
             { n: "Fá# (F#)", c: "1ª", d: "2", p: 5, a: "#", t: [] },
             { n: "Sol (G)", c: "1ª", d: "3", p: -10, a: "", t: [] },
             { n: "Sol# (G#)", c: "1ª", d: "4", p: -10, a: "#", t: [] },
-            // VOLTA (28 notas)
             { n: "Sol (G)", c: "1ª", d: "3", p: -10, a: "", t: [] }, 
             { n: "Sol♭ (Gb)", c: "1ª", d: "2", p: 5, a: "b", t: [] },
             { n: "Fá (F)", c: "1ª", d: "1", p: 5, a: "", t: [] },
@@ -121,28 +130,41 @@
         let tempo = 3000;
         let intervalo = null;
         let contadorGlobal = 0;
-        let countdown = 0;
+        let useSust = true;
+        let useBemol = true;
 
-        function embaralhar(arr) {
-            let n = [...arr];
-            for (let i = n.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [n[i], n[j]] = [n[j], n[i]];
+        function atualizarBaralho() {
+            let filtrado = listaOriginal.filter(nota => {
+                if (nota.a === "#" && !useSust) return false;
+                if (nota.a === "b" && !useBemol) return false;
+                return true;
+            });
+            baralhoAtivo = [...filtrado].sort(() => Math.random() - 0.5);
+            contadorGlobal = 0;
+            document.getElementById("contador-texto").innerText = "Próximo ciclo: " + baralhoAtivo.length + " notas";
+        }
+
+        function toggleFiltro(tipo) {
+            if (tipo === 'sust') {
+                useSust = !useSust;
+                document.getElementById("f-sust").innerText = "Sustenidos: " + (useSust ? "ON" : "OFF");
+                document.getElementById("f-sust").classList.toggle("btn-off", !useSust);
+            } else {
+                useBemol = !useBemol;
+                document.getElementById("f-bemol").innerText = "Bemóis: " + (useBemol ? "ON" : "OFF");
+                document.getElementById("f-bemol").classList.toggle("btn-off", !useBemol);
             }
-            return n;
+            atualizarBaralho();
         }
 
         function trocarNota() {
-            if (baralhoAtivo.length === 0) {
-                baralhoAtivo = embaralhar(listaOriginal);
-                contadorGlobal = 0;
-            }
+            if (baralhoAtivo.length === 0) atualizarBaralho();
             const nota = baralhoAtivo.pop();
             contadorGlobal++;
             document.getElementById("nota-texto").innerText = nota.n;
             document.getElementById("info-corda").innerText = "Corda: " + nota.c;
             document.getElementById("info-dedo").innerText = "Dedo: " + nota.d;
-            document.getElementById("contador-texto").innerText = "Nota " + contadorGlobal + " de 57";
+            document.getElementById("contador-texto").innerText = "Nota " + contadorGlobal + " de " + (baralhoAtivo.length + contadorGlobal);
             const b = document.getElementById("bolinha-nota");
             const a = document.getElementById("acidente-pauta");
             document.querySelectorAll('.tracinho').forEach(t => t.style.display = 'none');
@@ -156,23 +178,20 @@
         function togglePlay() {
             const btn = document.getElementById("btnPlayPause");
             if (intervalo) { clearInterval(intervalo); intervalo = null; btn.innerText = "PLAY"; btn.classList.remove("btn-pause"); }
-            else { iniciarContagem(); }
-        }
-
-        function iniciarContagem() {
-            const btn = document.getElementById("btnPlayPause");
-            btn.classList.add("btn-pause");
-            countdown = 5;
-            const cInt = setInterval(() => {
-                if (countdown > 0) { btn.innerText = countdown + "..."; countdown--; }
-                else { clearInterval(cInt); btn.innerText = "PAUSE"; trocarNota(); intervalo = setInterval(trocarNota, tempo); }
-            }, 1000);
+            else { 
+                btn.classList.add("btn-pause");
+                let c = 5;
+                const cInt = setInterval(() => {
+                    if (c > 0) { btn.innerText = c + "..."; c--; }
+                    else { clearInterval(cInt); btn.innerText = "PAUSE"; trocarNota(); intervalo = setInterval(trocarNota, tempo); }
+                }, 1000);
+            }
         }
 
         function toggleVis(id, btn, label) {
             const el = document.getElementById(id);
-            if (el.classList.contains('hidden')) { el.classList.remove('hidden'); btn.innerText = "OCULTAR " + label; }
-            else { el.classList.add('hidden'); btn.innerText = "MOSTRAR " + label; }
+            el.classList.toggle('hidden');
+            btn.innerText = (el.classList.contains('hidden') ? "MOSTRAR " : "OCULTAR ") + label;
         }
 
         function mudarVelocidade(aj) {
@@ -180,6 +199,8 @@
             document.getElementById("velocidade-visor").innerText = "Tempo: " + (tempo/1000).toFixed(1) + "s";
             if (intervalo) { clearInterval(intervalo); intervalo = setInterval(trocarNota, tempo); }
         }
+
+        atualizarBaralho();
     </script>
 </body>
 </html>
